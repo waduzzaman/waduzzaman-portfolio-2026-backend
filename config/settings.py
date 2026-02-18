@@ -8,7 +8,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-#-(6ro8euw1bu%8i(ao1f)8r4*lk7v=_74b+vioex2%8irpz9b'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+# Add your specific PythonAnywhere domain
+ALLOWED_HOSTS = ['mwaduzzaman.pythonanywhere.com']
+
+# Add this line (required for Django 4.0+)
+CSRF_TRUSTED_ORIGINS = ['https://mwaduzzaman.pythonanywhere.com']
 
 ALLOWED_HOSTS = []
 
@@ -69,7 +75,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database configuration (PostgreSQL)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'LOCATION': BASE_DIR / 'db.sqlite3',        
         'NAME': 'blog_db',
         'USER': 'waduzzaman',
         'PASSWORD': '123456',
@@ -97,7 +105,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images in code)
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files (User uploaded images for blog posts)
 MEDIA_URL = '/media/'
