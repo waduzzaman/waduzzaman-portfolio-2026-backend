@@ -1,24 +1,24 @@
 import os
 from pathlib import Path
 
-# Build paths inside the project
+# 1. BASE DIRECTORY
+# Path to the directory containing manage.py
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# 2. SECURITY SETTINGS
+# Note: Keep this key secret in production!
 SECRET_KEY = 'django-insecure-#-(6ro8euw1bu%8i(ao1f)8r4*lk7v=_74b+vioex2%8irpz9b'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# TURN OFF DEBUG FOR PRODUCTION
 DEBUG = False
 
-# Add your specific PythonAnywhere domain
+# YOUR DOMAIN NAME
 ALLOWED_HOSTS = ['mwaduzzaman.pythonanywhere.com']
 
-# Add this line (required for Django 4.0+)
+# REQUIRED FOR DJANGO 4.0+ ADMIN LOGIN ON HTTPS
 CSRF_TRUSTED_ORIGINS = ['https://mwaduzzaman.pythonanywhere.com']
 
-ALLOWED_HOSTS = []
-
-# Application definition
+# 3. APPLICATION DEFINITION
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -29,10 +29,11 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
-    'corsheaders',  # Required for Next.js to communicate with Django
+    'corsheaders', 
     
-    # Local apps
+    # Your local app
     'blog',
+    'users', # Added based on your file list
 ]
 
 MIDDLEWARE = [
@@ -46,10 +47,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# Allow Next.js (usually on port 3000) to access the API
+# 4. CORS CONFIGURATION (For Next.js frontend)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://mwaduzzaman.pythonanywhere.com", # Allow the domain itself
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -61,10 +63,11 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media', # Added for images
+                'django.template.context_processors.media', 
             ],
         },
     },
@@ -72,21 +75,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database configuration (PostgreSQL)
+# 5. DATABASE CONFIGURATION (Switch to SQLite for Free Tier)
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql',
         'ENGINE': 'django.db.backends.sqlite3',
-        'LOCATION': BASE_DIR / 'db.sqlite3',        
-        'NAME': 'blog_db',
-        'USER': 'waduzzaman',
-        'PASSWORD': '123456',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
-# Password validation
+# 6. PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
@@ -94,22 +91,19 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-# Internationalization
+# 7. INTERNATIONALIZATION
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# --- STATIC AND MEDIA FILES CONFIGURATION ---
-
-# Static files (CSS, JavaScript, Images in code)
+# 8. STATIC AND MEDIA FILES
+# Static files (CSS, JavaScript)
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Media files (User uploaded images for blog posts)
+# Media files (Images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
