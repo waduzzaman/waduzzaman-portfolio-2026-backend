@@ -2,21 +2,25 @@ import os
 from pathlib import Path
 
 # 1. BASE DIRECTORY
-# Path to the directory containing manage.py
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 2. SECURITY SETTINGS
-# Note: Keep this key secret in production!
 SECRET_KEY = 'django-insecure-#-(6ro8euw1bu%8i(ao1f)8r4*lk7v=_74b+vioex2%8irpz9b'
 
-# TURN OFF DEBUG FOR PRODUCTION
+# DEBUG must be False on PythonAnywhere
 DEBUG = False
 
-# YOUR DOMAIN NAME
 ALLOWED_HOSTS = ['mwaduzzaman.pythonanywhere.com']
 
-# REQUIRED FOR DJANGO 4.0+ ADMIN LOGIN ON HTTPS
+# REQUIRED: Trust the domain for CSRF
 CSRF_TRUSTED_ORIGINS = ['https://mwaduzzaman.pythonanywhere.com']
+
+# --- PYTHONANYWHERE HTTPS FIXES ---
+# These lines stop the "login refresh loop"
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+# ----------------------------------
 
 # 3. APPLICATION DEFINITION
 INSTALLED_APPS = [
@@ -31,9 +35,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders', 
     
-    # Your local app
+    # Your local apps
     'blog',
-    'users', # Added based on your file list
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -47,11 +51,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# 4. CORS CONFIGURATION (For Next.js frontend)
+# 4. CORS CONFIGURATION
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://mwaduzzaman.pythonanywhere.com", # Allow the domain itself
+    "https://mwaduzzaman.pythonanywhere.com",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -75,11 +79,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# 5. DATABASE CONFIGURATION (Switch to SQLite for Free Tier)
+# 5. DATABASE (Absolute path recommended for PythonAnywhere)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -98,11 +102,9 @@ USE_I18N = True
 USE_TZ = True
 
 # 8. STATIC AND MEDIA FILES
-# Static files (CSS, JavaScript)
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Media files (Images)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
