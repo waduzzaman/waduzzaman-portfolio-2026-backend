@@ -67,21 +67,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database configuration (PostgreSQL)
-# Replace your existing DATABASES with this:
-DATABASES = {
-    'default': dj_database_url.config(
-        # This is your local database fallback (optional)
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+# 1. Get the URL from environment
+db_from_env = os.environ.get('DATABASE_URL')
 
-# Neon requires SSL. Add this to ensure the connection is secure:
-DATABASES['default']['OPTIONS'] = {
-    'sslmode': 'require',
-}
+if db_from_env:
+    # 2. If it exists, parse it (This handles your Neon Postgres)
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=db_from_env,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+    # Neon requirement: must use SSL
+    DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+else:
+    # 3. Fallback for Local Development or Build Time
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
