@@ -1,28 +1,19 @@
 import os
 from pathlib import Path
+import dj_database_url
 
-# 1. BASE DIRECTORY
+# Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 2. SECURITY SETTINGS
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-#-(6ro8euw1bu%8i(ao1f)8r4*lk7v=_74b+vioex2%8irpz9b'
 
-# DEBUG must be False on PythonAnywhere
-DEBUG = False
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-ALLOWED_HOSTS = ['mwaduzzaman.pythonanywhere.com']
+ALLOWED_HOSTS = []
 
-# REQUIRED: Trust the domain for CSRF
-CSRF_TRUSTED_ORIGINS = ['https://mwaduzzaman.pythonanywhere.com']
-
-# --- PYTHONANYWHERE HTTPS FIXES ---
-# These lines stop the "login refresh loop"
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-# ----------------------------------
-
-# 3. APPLICATION DEFINITION
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -33,11 +24,10 @@ INSTALLED_APPS = [
 
     # Third-party apps
     'rest_framework',
-    'corsheaders', 
+    'corsheaders',  # Required for Next.js to communicate with Django
     
-    # Your local apps
+    # Local apps
     'blog',
-    'users',
 ]
 
 MIDDLEWARE = [
@@ -51,11 +41,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# 4. CORS CONFIGURATION
+# Allow Next.js (usually on port 3000) to access the API
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://mwaduzzaman.pythonanywhere.com",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -67,11 +56,10 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'django.template.context_processors.media', 
+                'django.template.context_processors.media', # Added for images
             ],
         },
     },
@@ -79,15 +67,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# 5. DATABASE (Absolute path recommended for PythonAnywhere)
+# Database configuration (PostgreSQL)
+# Replace your existing DATABASES with this:
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '/home/mwaduzzaman/waduzzaman-portfolio-2026-backend/db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # This is your local database fallback (optional)
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
-# 6. PASSWORD VALIDATION
+# Neon requires SSL. Add this to ensure the connection is secure:
+DATABASES['default']['OPTIONS'] = {
+    'sslmode': 'require',
+}
+
+# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
@@ -95,17 +91,22 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-# 7. INTERNATIONALIZATION
+# Internationalization
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# 8. STATIC AND MEDIA FILES
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# --- STATIC AND MEDIA FILES CONFIGURATION ---
 
+# Static files (CSS, JavaScript, Images in code)
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# Media files (User uploaded images for blog posts)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
